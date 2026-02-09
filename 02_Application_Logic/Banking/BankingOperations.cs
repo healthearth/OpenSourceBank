@@ -1,4 +1,4 @@
-// -- filepath fintechs-exhibitu/02_Application_Logic/Banking/IBankingOperations.cs
+// -- filepath fintechs-exhibitu/02_Application_Logic/Banking/BankingOperations.cs
 using GlobalBank.Domain.Interfaces;
 
 namespace GlobalBank.Application.Banking;
