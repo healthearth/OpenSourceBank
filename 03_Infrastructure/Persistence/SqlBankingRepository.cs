@@ -1,7 +1,8 @@
 // Filepath: fintechs-exhibitu/03_Infrastructure/Persistence/SqlBankingRepository.cs
 using Dapper;
 using Microsoft.Data.SqlClient;
-using GlobalBank.Domain.Interfaces; // Ensures it sees the "Rules"
+// using GlobalBank.Domain.Interfaces; // Ensures it sees the "Rules"
+using GlobalBank.Domain; // Ensures it sees the "Rules"
 using GlobalBank.Application.DTOs;   // Ensures it sees the "Deposit Form"
 
 namespace GlobalBank.Infrastructure.Persistence;
