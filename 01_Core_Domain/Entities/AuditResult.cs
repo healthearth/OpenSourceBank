@@ -1,4 +1,4 @@
-fintechs-exhibitu/01_Core_Domain/Entities/AuditResult.cs
+// fintechs-exhibitu/01_Core_Domain/Entities/AuditResult.cs
 namespace GlobalBank.Domain.Entities;
 
 public class AuditResult
