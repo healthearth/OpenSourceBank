@@ -1,4 +1,6 @@
 // Filepath: fintechs-exhibitu/03_Infrastructure/Vault/Physical_Audit_Logger.cs
+using GlobalBank.Domain.Entities;
+
 namespace GlobalBank.Infrastructure.Vault;
 
 public class PhysicalAuditLogger 
