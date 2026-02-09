@@ -1,8 +1,8 @@
 // Filepath: fintechs-exhibitu/03_Infrastructure/Persistence/SqlBankingRepository.cs
 using Dapper;
 using Microsoft.Data.SqlClient;
-using GlobalBank.Domain.Interfaces;
 using GlobalBank.Domain.Entities;
+using GlobalBank.Domain.Interfaces;
 
 namespace GlobalBank.Infrastructure.Persistence;
 
@@ -15,40 +15,12 @@ public class SqlBankingRepository : IBankingRepository
         _connectionString = connectionString;
     }
 
-    public async Task RegisterPhysicalAssetAsync(
-        PhysicalAssetDeposit asset,
-        Guid targetAccountId)
+    public async Task<Account?> GetAccountByIdAsync(Guid id)
     {
         using var conn = new SqlConnection(_connectionString);
-        await conn.OpenAsync();
-        using var tx = conn.BeginTransaction();
-
-        try
-        {
-            await conn.ExecuteAsync(
-                @"INSERT INTO PhysicalVault (SerialNumber, CurrencyCode, FaceValue)
-                  VALUES (@SerialNumber, @CurrencyCode, @FaceValue)",
-                asset, tx);
-
-            await conn.ExecuteAsync(
-                @"INSERT INTO DigitalLedger 
-                  (AccountId, Credit, Debit, PhysicalAssetRef, Description)
-                  VALUES (@AccountId, @Credit, 0, @AssetRef, 'Physical Asset Deposit')",
-                new
-                {
-                    AccountId = targetAccountId,
-                    Credit = asset.FaceValue,
-                    AssetRef = asset.SerialNumber
-                },
-                tx);
-
-            tx.Commit();
-        }
-        catch
-        {
-            tx.Rollback();
-            throw;
-        }
+        return await conn.QuerySingleOrDefaultAsync<Account>(
+            "SELECT * FROM Accounts WHERE Id = @id",
+            new { id });
     }
 
     public async Task InsertLedgerEntryAsync(
@@ -59,25 +31,35 @@ public class SqlBankingRepository : IBankingRepository
         string? physicalAssetRef = null)
     {
         using var conn = new SqlConnection(_connectionString);
-
         await conn.ExecuteAsync(
-            @"INSERT INTO DigitalLedger 
+            @"INSERT INTO DigitalLedger
               (AccountId, Credit, Debit, Description, PhysicalAssetRef)
-              VALUES (@AccountId, @Credit, @Debit, @Description, @PhysicalAssetRef)",
+              VALUES (@accountId, @credit, @debit, @description, @physicalAssetRef)",
             new { accountId, credit, debit, description, physicalAssetRef });
     }
 
-    public async Task<decimal> GetTotalLedgerBalanceAsync()
+    public async Task RegisterPhysicalAssetAsync(
+        PhysicalAssetDeposit asset,
+        Guid targetAccountId)
     {
         using var conn = new SqlConnection(_connectionString);
-        return await conn.ExecuteScalarAsync<decimal>(
-            @"SELECT SUM(Credit - Debit) FROM DigitalLedger");
+        await conn.ExecuteAsync(
+            @"INSERT INTO PhysicalVault (SerialNumber, CurrencyCode, FaceValue)
+              VALUES (@SerialNumber, @CurrencyCode, @FaceValue)",
+            asset);
     }
 
-    public async Task<decimal> GetTotalPhysicalVaultValueAsync()
+    public async Task<decimal> GetLedgerTotalAsync()
     {
         using var conn = new SqlConnection(_connectionString);
         return await conn.ExecuteScalarAsync<decimal>(
-            @"SELECT SUM(FaceValue) FROM PhysicalVault");
+            "SELECT ISNULL(SUM(Credit - Debit), 0) FROM DigitalLedger");
+    }
+
+    public async Task<decimal> GetPhysicalVaultTotalAsync()
+    {
+        using var conn = new SqlConnection(_connectionString);
+        return await conn.ExecuteScalarAsync<decimal>(
+            "SELECT ISNULL(SUM(FaceValue), 0) FROM PhysicalVault");
     }
 }
