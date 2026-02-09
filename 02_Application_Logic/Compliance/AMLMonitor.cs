@@ -1,4 +1,6 @@
 // Filepath: fintechs-exhibitu/02_Application_Logic/Compliance/AMLMonitor.cs
+using GlobalBank.Domain.Entities;
+
 public class AMLMonitor {
     private const decimal FlagThreshold = 10000.00m; // Legal limit for CTR filing
 
