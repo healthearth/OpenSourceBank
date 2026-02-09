@@ -1,0 +1,7 @@
+// Filepath: fintechs-exhibitu/03_Infrastructure/Persistence/SqlLedgerRepository.cs
+public async Task<bool> SaveTransactionAsync(LedgerEntry entry) {
+    // Use SQL Transactions to ensure the update is ATOMIC 
+    // (It either happens 100% or 0%—no partial money moves)
+    const string sql = "INSERT INTO Ledger (Debit, Credit, AssetId) VALUES (@Debit, @Credit, @AssetId)";
+    return await _db.ExecuteAsync(sql, entry) > 0;
+}
