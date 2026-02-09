@@ -1,48 +1,48 @@
 // -- filepath fintechs-exhibitu/02_Application_Logic/Banking/IBankingOperations.cs
-using GlobalBank.Domain.Entities;
 using GlobalBank.Domain.Interfaces;
 
-namespace GlobalBank.Domain.Interfaces
+namespace GlobalBank.Application.Banking;
+
+public class BankingOperations : IBankingOperations
 {
-    public class BankingOperations : IBankingOperations
+    private readonly IBankingRepository _repo;
+
+    public BankingOperations(IBankingRepository repo)
     {
-        private readonly IBankingRepository _repository;
+        _repo = repo;
+    }
 
-        public BankingOperations(IBankingRepository repository)
-        {
-            _repository = repository;
-        }
+    public async Task<bool> TransactAsync(Guid from, Guid to, decimal amount)
+    {
+        if (amount <= 0)
+            return false;
 
-        public async Task<bool> TransactAsync(Guid senderId, Guid receiverId, decimal amount)
-        {
-            var sender = _repository.GetAccountById(senderId);
-            var receiver = _repository.GetAccountById(receiverId);
+        var fromBalance = await _repo.GetTotalLedgerBalanceAsync(); // simplified for now
+        if (fromBalance < amount)
+            return false;
 
-            if (sender.Balance < amount)
-                return false; // AML + overdraft guard
+        await _repo.InsertLedgerEntryAsync(
+            from,
+            credit: 0,
+            debit: amount,
+            description: "Transfer Out"
+        );
 
-            sender.Balance -= amount;
-            receiver.Balance += amount;
+        await _repo.InsertLedgerEntryAsync(
+            to,
+            credit: amount,
+            debit: 0,
+            description: "Transfer In"
+        );
 
-            var tx = new Transaction
-            {
-                Id = Guid.NewGuid(),
-                AccountId = senderId,
-                Amount = amount,
-                TimestampUtc = DateTime.UtcNow
-            };
+        return true;
+    }
 
-            await _repository.SaveTransactionAsync(tx);
-            await _repository.UpdateAccountAsync(sender);
-            await _repository.UpdateAccountAsync(receiver);
+    public async Task<bool> ReconcileWithPhysicalVaultAsync()
+    {
+        var ledgerTotal = await _repo.GetTotalLedgerBalanceAsync();
+        var vaultTotal  = await _repo.GetTotalPhysicalVaultValueAsync();
 
-            return true;
-        }
-
-        public Task<bool> ReconcileWithPhysicalVaultAsync()
-        {
-            // later: compare ledger totals vs physical vault totals
-            return Task.FromResult(true);
-        }
+        return ledgerTotal == vaultTotal;
     }
 }
