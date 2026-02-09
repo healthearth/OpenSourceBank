@@ -1,13 +1,12 @@
 // Filepath: fintechs-exhibitu/03_Infrastructure/Persistence/SqlBankingRepository.cs
 using Dapper;
 using Microsoft.Data.SqlClient;
-// using GlobalBank.Domain.Interfaces; // Ensures it sees the "Rules"
-using GlobalBank.Domain; // Ensures it sees the "Rules"
-using GlobalBank.Application.DTOs;   // Ensures it sees the "Deposit Form"
+using GlobalBank.Domain.Interfaces;
+using GlobalBank.Domain.Entities;
 
 namespace GlobalBank.Infrastructure.Persistence;
 
-public class SqlBankingRepository : IBankingRepository 
+public class SqlBankingRepository : IBankingRepository
 {
     private readonly string _connectionString;
 
@@ -16,45 +15,69 @@ public class SqlBankingRepository : IBankingRepository
         _connectionString = connectionString;
     }
 
-    // --- EXISTING LOGIC: Registering your $10 and 50k Dong ---
-    public async Task RegisterPhysicalAssetAsync(PhysicalAssetDeposit asset, Guid targetAccountId) 
+    public async Task RegisterPhysicalAssetAsync(
+        PhysicalAssetDeposit asset,
+        Guid targetAccountId)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var transaction = conn.BeginTransaction();
+        using var tx = conn.BeginTransaction();
 
-        try {
-            var vaultSql = @"INSERT INTO PhysicalVault (SerialNumber, CurrencyCode, FaceValue) 
-                             VALUES (@SerialNumber, @CurrencyCode, @FaceValue)";
-            await conn.ExecuteAsync(vaultSql, asset, transaction);
+        try
+        {
+            await conn.ExecuteAsync(
+                @"INSERT INTO PhysicalVault (SerialNumber, CurrencyCode, FaceValue)
+                  VALUES (@SerialNumber, @CurrencyCode, @FaceValue)",
+                asset, tx);
 
-            var ledgerSql = @"INSERT INTO DigitalLedger (AccountId, Credit, PhysicalAssetRef, Description) 
-                              VALUES (@AccountId, @Credit, @AssetRef, 'Startup Capital Deposit')";
-            
-            await conn.ExecuteAsync(ledgerSql, new { 
-                AccountId = targetAccountId, 
-                Credit = asset.FaceValue, 
-                AssetRef = asset.SerialNumber 
-            }, transaction);
+            await conn.ExecuteAsync(
+                @"INSERT INTO DigitalLedger 
+                  (AccountId, Credit, Debit, PhysicalAssetRef, Description)
+                  VALUES (@AccountId, @Credit, 0, @AssetRef, 'Physical Asset Deposit')",
+                new
+                {
+                    AccountId = targetAccountId,
+                    Credit = asset.FaceValue,
+                    AssetRef = asset.SerialNumber
+                },
+                tx);
 
-            transaction.Commit();
-        } catch {
-            transaction.Rollback();
-            throw; 
+            tx.Commit();
+        }
+        catch
+        {
+            tx.Rollback();
+            throw;
         }
     }
 
-    // --- NEW PLACEHOLDERS: Added to satisfy the Interface (Fixes CS0535) ---
-    
-    public async Task<bool> TransactAsync(Guid from, Guid to, decimal amount) 
+    public async Task InsertLedgerEntryAsync(
+        Guid accountId,
+        decimal credit,
+        decimal debit,
+        string description,
+        string? physicalAssetRef = null)
     {
-        // This will be the P2P transfer logic later
-        throw new NotImplementedException();
+        using var conn = new SqlConnection(_connectionString);
+
+        await conn.ExecuteAsync(
+            @"INSERT INTO DigitalLedger 
+              (AccountId, Credit, Debit, Description, PhysicalAssetRef)
+              VALUES (@AccountId, @Credit, @Debit, @Description, @PhysicalAssetRef)",
+            new { accountId, credit, debit, description, physicalAssetRef });
     }
 
-    public async Task<bool> ReconcileWithPhysicalVaultAsync() 
+    public async Task<decimal> GetTotalLedgerBalanceAsync()
     {
-        // This will be the Audit logic later
-        throw new NotImplementedException();
+        using var conn = new SqlConnection(_connectionString);
+        return await conn.ExecuteScalarAsync<decimal>(
+            @"SELECT SUM(Credit - Debit) FROM DigitalLedger");
+    }
+
+    public async Task<decimal> GetTotalPhysicalVaultValueAsync()
+    {
+        using var conn = new SqlConnection(_connectionString);
+        return await conn.ExecuteScalarAsync<decimal>(
+            @"SELECT SUM(FaceValue) FROM PhysicalVault");
     }
 }
