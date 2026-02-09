@@ -7,4 +7,5 @@ global using Dapper;
 
 // Bridges your specific folders
 global using GlobalBank.Application.DTOs;
-global using GlobalBank.Core.Domain.Entities;
+
+//global using GlobalBank.Core.Domain.Entities;
