@@ -1,5 +1,5 @@
 // Filepath: fintechs-exhibitu/02_Application_Logic/Transfers/P2PTransferService.cs
-using GlobalBank.Domain.INterfaces;
+using GlobalBank.Domain.Interfaces;
 
 namespace GlobalBank.Application.Transfers;
 
