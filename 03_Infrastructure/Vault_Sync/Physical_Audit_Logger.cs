@@ -1,4 +1,6 @@
 // Filepath: fintechs-exhibitu/03_Infrastructure/Vault/Physical_Audit_Logger.cs
+// © 2026 Andrew Kieckhefer. All rights reserved.
+
 // using GlobalBank.Domain.Entities;
 using GlobalBank.Domain.ValueObjects; 
 // using AuditResult = GlobalBank.Domain.ValueObjects.AuditResult;
