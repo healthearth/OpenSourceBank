@@ -1,14 +1,9 @@
 // Filepath: fintechs-exhibitu/03_Infrastructure/Persistence/SqlBankingRepository.cs
+
 using Dapper;
 using Microsoft.Data.SqlClient;
 using GlobalBank.Domain.Entities;
 using GlobalBank.Domain.Interfaces;
-
-public Task RecordCapitalDepositAsync(PhysicalAssetDeposit deposit)
-{
-    // TODO: persist deposit
-    return Task.CompletedTask;
-}
 
 namespace GlobalBank.Infrastructure.Persistence;
 
@@ -19,6 +14,12 @@ public class SqlBankingRepository : IBankingRepository
     public SqlBankingRepository(string connectionString)
     {
         _connectionString = connectionString;
+    }
+
+    public Task RecordCapitalDepositAsync(PhysicalAssetDeposit deposit)
+    {
+        // TODO: persist deposit
+        return Task.CompletedTask;
     }
 
     public async Task<Account?> GetAccountByIdAsync(Guid id)
