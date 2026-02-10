@@ -1,4 +1,6 @@
 // fintechs-exhibitu/GlobalUsings.cs
+// © 2026 Andrew Kieckhefer. All rights reserved. 
+
 global using System;
 global using System.Threading.Tasks;
 
