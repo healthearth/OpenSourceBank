@@ -1,4 +1,5 @@
 // Filepath: fintechs-exhibitu/03_Infrastructure/Persistence/SqlLedgerRepository.cs
+// © 2026 Andrew Kieckhefer. All rights reserved.
 
 using System.Data;
 using Dapper;
