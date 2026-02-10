@@ -43,9 +43,9 @@ public class PhysicalAuditLogger
         await _db.SaveChangesAsync();
 
         // 4. Return value-object audit result
-        return new GlobalBank.Domain.ValueObjects.AuditResult.WithDiscrepancy(
-            discrepancy < 0 ? Math.Abs(discrepancy) : 0m, 
-            log.IsCompliant
+        return new AuditResult(
+            log.IsCompliant,
+            discrepancy < 0 ? Math.Abs(discrepancy) : 0m
         );
     }
 }
