@@ -1,6 +1,7 @@
-// fintechs-exhibitu/fintechsiexhibitu.csproj
 <Project Sdk="Microsoft.NET.Sdk">
+<!-- fintechs-exhibitu/fintechsiexhibitu.csproj -->
 
+  <!-- Project metadata -->
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net10.0</TargetFramework>
@@ -9,6 +10,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+<!-- Dependencies -->
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
