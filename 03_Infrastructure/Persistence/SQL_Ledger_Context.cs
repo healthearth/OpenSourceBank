@@ -1,4 +1,6 @@
 // Filepath: fintechs-exhibitu/03_Infrastructure/Persistence/SqlLedgerContext.cs
+// © 2026 Andrew Kieckhefer. All rights reserved.
+
 using GlobalBank.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
