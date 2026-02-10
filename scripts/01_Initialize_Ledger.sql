@@ -1,4 +1,5 @@
 -- Filepath: scripts/01_Initialize_Ledger.sql
+-- © 2026 Andrew Kieckhefer. All rights reserved.
 
 -- THE ASSET VAULT: Tracks every physical bill by serial number
 CREATE TABLE PhysicalVault (
