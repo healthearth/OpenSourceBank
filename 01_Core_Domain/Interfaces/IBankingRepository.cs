@@ -1,14 +1,29 @@
 // Filepath: fintechs-exhibitu/01_Core_Domain/Interfaces/IBankingRepository.cs
+using System;
 using System.Threading.Tasks;
-using fintechs_exhibitu._01_Core_Domain.Entities;
-using fintechs_exhibitu._01_Core_Domain.ValueObjects;
+using GlobalBank.Domain.Entities;
 
-namespace fintechs_exhibitu._01_Core_Domain.Interfaces
+namespace GlobalBank.Domain.Interfaces
 {
     public interface IBankingRepository
     {
-        Task<Account?> GetAccountAsync(string accountId);
-        Task SaveAccountAsync(Account account);
-        Task<AuditResult> LogAuditAsync(AuditResult audit);
+        Task<Account?> GetAccountByIdAsync(Guid id);
+
+        Task InsertLedgerEntryAsync(
+            Guid accountId,
+            decimal credit,
+            decimal debit,
+            string description,
+            string? physicalAssetRef = null);
+
+        Task RegisterPhysicalAssetAsync(
+            PhysicalAssetDeposit asset,
+            Guid targetAccountId);
+
+        Task<decimal> GetLedgerTotalAsync();
+
+        Task<decimal> GetPhysicalVaultTotalAsync();
+
+        Task RecordCapitalDepositAsync(PhysicalAssetDeposit deposit);
     }
 }
