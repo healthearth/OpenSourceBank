@@ -1,4 +1,6 @@
 // Filepath: fintechs-exhibitu/01_Core_Domain/Interfaces/IBankingRepository.cs
+Task RecordCapitalDepositAsync(PhysicalAssetDeposit deposit);
+
 using GlobalBank.Domain.Entities;
 
 namespace GlobalBank.Domain.Interfaces;
