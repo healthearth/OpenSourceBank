@@ -12,8 +12,9 @@ public class P2PTransferService {
     // 2. The private constructor - injects the dependencies here
     public P2PTransferService(IBankingOperations ops, IAmlService aml)
     {
-        _ops = ops;
-        _aml = aml;
+        _ops = ops ?? throw new ArgumentNullException(nameof(ops));
+        _aml = aml ?? throw new ArgumentNullException(nameof(aml));
+
     }
 
     // 3. Methods
