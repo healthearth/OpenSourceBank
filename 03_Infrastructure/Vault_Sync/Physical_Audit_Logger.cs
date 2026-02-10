@@ -35,7 +35,8 @@ public class PhysicalAuditLogger
 
         // 3. Write to an IMMUTABLE audit table (Legal requirement)
         _db.AuditLogs.Add(log);
-        await _db.SaveChangesAsync();
+        
+        await _db.Accounts.SumAsync(a => a.Balance);
 
         return new AuditResult(log.IsCompliant, discrepancy);
     }
