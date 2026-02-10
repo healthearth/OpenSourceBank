@@ -1,4 +1,6 @@
 // Filepath: fintechs-exhibitu/01_Core_Domain/ValueObjects/Currency.cs
+// © 2026 Andrew Kieckhefer. All rights reserved.
+
 namespace GlobalBank.Domain.ValueObjects;
 
 public record Currency {
