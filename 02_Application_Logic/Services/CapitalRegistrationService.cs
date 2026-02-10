@@ -1,30 +1,44 @@
 // Filepath: fintechs-exhibitu/02_Application_Logic/Services/CapitalRegistrationService.cs
+
 using GlobalBank.Domain.Interfaces;
 using GlobalBank.Domain.Entities;
 
 namespace GlobalBank.Application.Services;
 
-public class CapitalRegistrationService 
+public class CapitalRegistrationService
 {
     private readonly IBankingRepository _repo;
 
-    public async Task RegisterStartupCapital(IEnumerable<PhysicalAssetDeposit> assets)
+    public CapitalRegistrationService(IBankingRepository repo)
+    {
+        _repo = repo;
+    }
+
+    public async Task RegisterStartupCapital(
+        Guid targetAccountId,
+        IEnumerable<PhysicalAssetDeposit> assets)
     {
         foreach (var asset in assets)
         {
-            // 1. Calculate the AI$ equivalent (AI-driven exchange rate logic)
-            decimal aiValue = ExchangeEngine.ConvertToAiDollar(asset.FaceValue, asset.CurrencyCode);
+            // 1. Convert physical currency to AI$ equivalent
+            decimal aiValue = ExchangeEngine.ConvertToAiDollar(
+                asset.FaceValue,
+                asset.CurrencyCode);
 
-            // 2. Create the Ledger Entry linking the Serial Number to the Digital Asset
-            var entry = new LedgerEntry {
-                Debit = 0,
-                Credit = aiValue,
-                PhysicalAssetId = asset.SerialNumber,
-                Description = $"Startup Capital: {asset.CurrencyCode} Serial {asset.SerialNumber}"
-            };
+            // 2. Register the physical asset in the vault
+            await _repo.RegisterPhysicalAssetAsync(asset, targetAccountId);
 
-            // 3. Commit to the Immutable SQL Ledger
-            await _repo.RecordCapitalDepositAsync(entry);
+            // 3. Create the ledger entry
+            await _repo.InsertLedgerEntryAsync(
+                accountId: targetAccountId,
+                credit: aiValue,
+                debit: 0m,
+                description: $"Startup Capital: {asset.CurrencyCode} Serial {asset.SerialNumber}",
+                physicalAssetRef: asset.SerialNumber);
+
+            // 4. Record the capital deposit event
+            await _repo.RecordCapitalDepositAsync(asset);
         }
     }
 }
+
