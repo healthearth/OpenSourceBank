@@ -1,4 +1,5 @@
 // Filepath: fintechs-exhibitu/02_Application_Logic/Compliance/AMLMonitor.cs
+// © 2026 Andrew Kieckhefer. All rights reserved.
 using GlobalBank.Domain.Entities;
 
 public class AMLMonitor {
