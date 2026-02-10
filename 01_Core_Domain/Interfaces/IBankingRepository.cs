@@ -1,4 +1,5 @@
 // Filepath: fintechs-exhibitu/01_Core_Domain/Interfaces/IBankingRepository.cs
+// © 2026 Andrew Kieckhefer. All rights reserved.
 
 using System;
 using System.Threading.Tasks;
