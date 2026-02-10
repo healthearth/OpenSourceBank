@@ -1,4 +1,6 @@
 // Filepath: fintechs-exhibitu/01_Core_Domain/ValueObjects/Money.cs
+// © 2026 Andrew Kieckhefer. All rights reserved.
+
 public record Money {
     public decimal Amount { get; init; }
     public string Currency { get; init; } // e.g. "AI$"
