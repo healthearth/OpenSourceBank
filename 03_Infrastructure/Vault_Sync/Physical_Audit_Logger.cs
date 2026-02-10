@@ -39,10 +39,12 @@ public class PhysicalAuditLogger
 
         // 3. Write to an IMMUTABLE audit table (Legal requirement)
         _db.AuditLogs.Add(log);
-        
         await _db.SaveChangesAsync();
 
         // 4. Return value-object audit result
-        return new AuditResult.WithDiscrepancy(discrepancy < 0 ? Math.Abs(discrepancy(log.IsCompliant, discrepancy) : 0m);
+        return new AuditResult.WithDiscrepancy(
+            discrepancy < 0 ? Math.Abs(discrepancy) : 0m, 
+            log.IsCompliant
+        );
     }
 }
