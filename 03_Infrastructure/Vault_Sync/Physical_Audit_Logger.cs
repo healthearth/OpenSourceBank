@@ -1,6 +1,7 @@
 // Filepath: fintechs-exhibitu/03_Infrastructure/Vault/Physical_Audit_Logger.cs
 using GlobalBank.Domain.Entities;
 using GlobalBank.Domain.ValueObjects; 
+// using AuditResult = GlobalBank.Domain.ValueObjects.AuditResult;
 using GlobalBank.Infrastructure.Persistence; 
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,7 @@ public class PhysicalAuditLogger
     /// Compares physical vault inventory against digital liabilities.
     /// This is the "Truth Check" for the AI$.
     /// </summary>
-    public async Task<AuditResult> PerformVaultReconciliationAsync(decimal actualPhysicalCash)
+    public async Task<GlobalBank.Domain.ValueObjects.AuditResult> PerformVaultReconciliationAsync(decimal actualPhysicalCash)
     {
         // 1. Get total Digital AI$ in circulation from SQL
         decimal totalDigitalCirculation = await _db.Accounts.SumAsync(a => a.Balance);
@@ -42,7 +43,7 @@ public class PhysicalAuditLogger
         await _db.SaveChangesAsync();
 
         // 4. Return value-object audit result
-        return new AuditResult.WithDiscrepancy(
+        return new GlobalBank.Domain.ValueObjects.AuditResult.WithDiscrepancy(
             discrepancy < 0 ? Math.Abs(discrepancy) : 0m, 
             log.IsCompliant
         );
