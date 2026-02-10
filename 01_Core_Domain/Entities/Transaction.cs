@@ -1,4 +1,5 @@
 // Filepath: fintechs-exhibitu/01_Core_Domain/Entities/Transaction.cs
+// © 2026 Andrew Kieckhefer. All rights reserved.
 namespace GlobalBank.Domain.Entities;
 
 public class Transaction {
