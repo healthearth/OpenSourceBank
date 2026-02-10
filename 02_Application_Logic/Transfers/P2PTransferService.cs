@@ -1,4 +1,5 @@
 // Filepath: fintechs-exhibitu/02_Application_Logic/Transfers/P2PTransferService.cs
+// © 2026 Andrew Kieckhefer. All rights reserved.
 
 using GlobalBank.Domain.Interfaces;
 
