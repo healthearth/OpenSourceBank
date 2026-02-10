@@ -3,4 +3,6 @@ namespace GlobalBank.Domain.ValueObjects;
 
 public record AuditResult(decimal LedgerTotal, decimal PhysicalTotal);
 
-await _db.Accounts.SumAsync(a => a.Balance);
+// await _db.Accounts.SumAsync(a => a.Balance);
+
+
