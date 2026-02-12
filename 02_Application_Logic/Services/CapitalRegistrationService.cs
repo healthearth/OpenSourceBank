@@ -24,7 +24,7 @@ public class CapitalRegistrationService
         {
             // 1. Convert physical currency to OSB equivalent
             // Example, $10.51USD → OSB 20° @ 2/12/2026 1:13AM timestamp @ 42.82889°N, 88.19750°W﻿. twenty degrees fahrenheit, clear sky.
-            decimal aiValue = ExchangeEngine.ConvertToAiDollar(
+            decimal OSBValue = ExchangeEngine.ConvertToOSB(
                 asset.FaceValue,
                 asset.CurrencyCode);
 
