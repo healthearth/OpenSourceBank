@@ -5,7 +5,9 @@ namespace GlobalBank.Domain.Entities;
 
 public class Account
 {
-    public Guid Id { get; private set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
     public string OwnerName { get; private set; }
     public string CurrencyCode { get; private set; } = "USD";
     public bool IsKycVerified { get; private set; }
