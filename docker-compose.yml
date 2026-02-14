@@ -1,23 +1,37 @@
-version: '3.8'
+version: "3.9"
 
 services:
   api:
     build: .
+    container_name: openledger-api
     ports:
       - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Database=openledger;Username=postgres;Password=postgres
     depends_on:
       - db
-    environment:
-      - ConnectionStrings__Default=Host=db;Port=5432;Database=openledger;Username=postgres;Password=postgres
-      - JwtKey=SUPER_SECRET_KEY_CHANGE_ME
 
   db:
     image: postgres:15
+    container_name: openledger-db
     restart: always
     environment:
+      POSTGRES_DB: openledger
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: openledger
     ports:
       - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
+  dashboard:
+    image: nginx:latest
+    container_name: openledger-dashboard
+    ports:
+      - "8080:80"
+    volumes:
+      - ./09_Observability/frontend-dashboard:/usr/share/nginx/html
+
+volumes:
+  pgdata:
