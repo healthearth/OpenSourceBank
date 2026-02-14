@@ -1,1 +1,15 @@
-/* */
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  padding: 20px;
+}
+
+header {
+  border-bottom: 1px solid #334155;
+  margin-bottom: 20px;
+}
+
+section {
+  margin-top: 20px;
+}
